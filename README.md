@@ -1,4 +1,4 @@
-# Tic Tac Bluemix
+# Tic-Tac-Toe remote game
 
 Small Tic Tac Toe game between 2 remote players using REST / GCM comms
 
