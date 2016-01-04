@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/turn_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:gravity="center"
+        android:text="Your turn"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/score"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="You : 0 / Opponent : 0"
+        android:textSize="30sp" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5">
+
+            <Button
+                android:id="@+id/pos1"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:width="0dp"
+                android:onClick="segmentClick"
+                android:text="" />
+
+            <Button
+                android:id="@+id/pos2"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:width="0dp"
+                android:onClick="segmentClick"
+                android:text="" />
+
+            <Button
+                android:id="@+id/pos3"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:width="0dp"
+                android:onClick="segmentClick"
+                android:text="" />
+
+        </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5">
+
+            <Button
+                android:id="@+id/pos4"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:width="0dp"
+                android:onClick="segmentClick"
+                android:text="" />
+
+            <Button
+                android:id="@+id/pos5"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:width="0dp"
+                android:onClick="segmentClick"
+                android:text="" />
+
+            <Button
+                android:id="@+id/pos6"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:width="0dp"
+                android:onClick="segmentClick"
+                android:text="" />
+
+        </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5">
+
+            <Button
+                android:id="@+id/pos7"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:width="0dp"
+                android:onClick="segmentClick"
+                android:text="" />
+
+            <Button
+                android:id="@+id/pos8"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:width="0dp"
+                android:onClick="segmentClick"
+                android:text="" />
+
+            <Button
+                android:id="@+id/pos9"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5"
+                android:width="0dp"
+                android:onClick="segmentClick"
+                android:text="" />
+
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>

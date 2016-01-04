@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/client.iml" filepath="$PROJECT_DIR$/client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tic-tac-bluemix/tic-tac-bluemix.iml" filepath="$PROJECT_DIR$/tic-tac-bluemix/tic-tac-bluemix.iml" />
+    </modules>
+  </component>
+</project>

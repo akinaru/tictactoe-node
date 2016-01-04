@@ -1,0 +1,25 @@
+{
+  "name": "tictactoe",
+  "version": "0.0.1",
+  "description": "Tic Tac Toe remote backend",
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "cloudant": "^1.4.0",
+    "express": "^4.13.3",
+    "imf-oauth-user-sdk": "*",
+    "node-gcm": "^0.13.0",
+    "passport": "*",
+    "passport-imf-token-validation": "*"
+  },
+  "engines": {
+    "node": "0.10.26"
+  },
+  "repository": {},
+  "scripts": {
+    "start": "node app.js"
+  },
+  "main": "app.js",
+  "devDependencies": {},
+  "author": "Bertrand Martel",
+  "license": "MIT"
+}

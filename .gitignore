@@ -1,0 +1,10 @@
+.gradle
+/client/local.properties
+/client/.idea/workspace.xml
+/client/.idea/libraries
+.DS_Store
+/client/build
+/client/build/tic-tac-bluemix/build
+/server/manifest.yml
+/server/node_modules
+/server/authentication.json
