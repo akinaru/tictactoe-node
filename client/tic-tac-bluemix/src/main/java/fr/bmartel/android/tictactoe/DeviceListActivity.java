@@ -51,6 +51,8 @@ public class DeviceListActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.device_list_activity);
 
+        Log.i(TAG, "onCreate DeviceListActivity");
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BroadcastFilters.EVENT_USERNAME);
         intentFilter.addAction(BroadcastFilters.EVENT_DEVICE_LIST);
@@ -115,8 +117,11 @@ public class DeviceListActivity extends Activity {
             challengeDialog.cancel();
             challengeDialog.dismiss();
         }
-
         GameSingleton.getInstance(DeviceListActivity.this).onResume();
+
+        if (GameSingleton.pendingChallenge && GameSingleton.pendingChallengeMessage != null) {
+            showChallengeDialog(GameSingleton.pendingChallengeMessage.getChallengerName(), GameSingleton.pendingChallengeMessage.getChallengerId());
+        }
     }
 
     @Override
@@ -129,6 +134,7 @@ public class DeviceListActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(eventReceiver);
+        Log.i(TAG, "onDestroy DeviceListActivity");
     }
 
     private BroadcastReceiver eventReceiver = new BroadcastReceiver() {
@@ -174,6 +180,8 @@ public class DeviceListActivity extends Activity {
                                 showChallengeDialog(challengeMessage.getChallengerName(), challengeMessage.getChallengerId());
                             }
                         });
+
+
                     } else if (message instanceof ChallengeResponse) {
 
                         final ChallengeResponse response = (ChallengeResponse) message;

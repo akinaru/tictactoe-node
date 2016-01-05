@@ -121,7 +121,6 @@ public class GameActivity extends Activity {
                                     displayRestartDialog();
                                 } else {
                                     turn_message.setText("Your turn ( " + GameSingleton.getInstance(GameActivity.this).getSign() + " )");
-                                    Toast.makeText(GameActivity.this, "This is now your turn", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });

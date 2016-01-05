@@ -58,6 +58,10 @@ public class GameSingleton {
 
     private String challengerId = "";
 
+    public static boolean activityForeground = false;
+    public static ChallengeMessage pendingChallengeMessage = null;
+    public static boolean pendingChallenge = false;
+
     private GameSingleton(Context context) {
 
         this.context = context.getApplicationContext();
@@ -307,10 +311,12 @@ public class GameSingleton {
     public void onResume() {
         LocalBroadcastManager.getInstance(context).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+        activityForeground = true;
     }
 
     public void onPause() {
         LocalBroadcastManager.getInstance(context).unregisterReceiver(mRegistrationBroadcastReceiver);
+        activityForeground = false;
     }
 
     /**
