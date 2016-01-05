@@ -1,4 +1,4 @@
-package fr.bmartel.android.tictactoe;
+package fr.bmartel.android.tictactoe.datamodel;
 
 /**
  * @author Bertrand Martel

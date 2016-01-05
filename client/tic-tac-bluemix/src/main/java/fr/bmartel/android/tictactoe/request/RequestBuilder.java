@@ -3,7 +3,7 @@ package fr.bmartel.android.tictactoe.request;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import fr.bmartel.android.tictactoe.GameMessageTopic;
+import fr.bmartel.android.tictactoe.datamodel.GameMessageTopic;
 import fr.bmartel.android.tictactoe.constant.RequestConstants;
 
 /**

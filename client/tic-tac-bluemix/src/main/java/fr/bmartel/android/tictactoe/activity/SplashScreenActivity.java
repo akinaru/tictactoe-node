@@ -1,10 +1,13 @@
-package fr.bmartel.android.tictactoe;
+package fr.bmartel.android.tictactoe.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+
+import fr.bmartel.android.tictactoe.GameSingleton;
+import fr.bmartel.android.tictactoe.R;
 
 /**
  * @author Bertrand Martel

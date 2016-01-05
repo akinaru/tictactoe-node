@@ -25,8 +25,10 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import fr.bmartel.android.tictactoe.activity.GameActivity;
 import fr.bmartel.android.tictactoe.constant.BroadcastFilters;
 import fr.bmartel.android.tictactoe.constant.RequestConstants;
+import fr.bmartel.android.tictactoe.datamodel.ChallengeMessage;
 import fr.bmartel.android.tictactoe.gcm.QuickstartPreferences;
 import fr.bmartel.android.tictactoe.gcm.RegistrationIntentService;
 import fr.bmartel.android.tictactoe.request.RequestBuilder;

@@ -1,4 +1,4 @@
-package fr.bmartel.android.tictactoe;
+package fr.bmartel.android.tictactoe.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.bmartel.android.tictactoe.R;
+import fr.bmartel.android.tictactoe.datamodel.DeviceItem;
 
 public class DeviceAdapter extends ArrayAdapter<DeviceItem> {
 

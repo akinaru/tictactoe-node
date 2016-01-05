@@ -9,12 +9,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.bmartel.android.tictactoe.ChallengeMessage;
-import fr.bmartel.android.tictactoe.ChallengeResponse;
-import fr.bmartel.android.tictactoe.DeviceItem;
-import fr.bmartel.android.tictactoe.GameMessageTopic;
-import fr.bmartel.android.tictactoe.MessageObject;
-import fr.bmartel.android.tictactoe.PlayRequest;
+import fr.bmartel.android.tictactoe.datamodel.ChallengeMessage;
+import fr.bmartel.android.tictactoe.datamodel.ChallengeResponse;
+import fr.bmartel.android.tictactoe.datamodel.DeviceItem;
+import fr.bmartel.android.tictactoe.datamodel.GameMessageTopic;
+import fr.bmartel.android.tictactoe.datamodel.MessageObject;
+import fr.bmartel.android.tictactoe.datamodel.PlayRequest;
 import fr.bmartel.android.tictactoe.constant.GameStates;
 import fr.bmartel.android.tictactoe.constant.RequestConstants;
 

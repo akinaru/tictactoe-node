@@ -1,4 +1,4 @@
-package fr.bmartel.android.tictactoe;
+package fr.bmartel.android.tictactoe.activity;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -23,8 +23,15 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.bmartel.android.tictactoe.adapter.DeviceAdapter;
+import fr.bmartel.android.tictactoe.GameSingleton;
+import fr.bmartel.android.tictactoe.R;
 import fr.bmartel.android.tictactoe.constant.BroadcastFilters;
 import fr.bmartel.android.tictactoe.constant.RequestConstants;
+import fr.bmartel.android.tictactoe.datamodel.ChallengeMessage;
+import fr.bmartel.android.tictactoe.datamodel.ChallengeResponse;
+import fr.bmartel.android.tictactoe.datamodel.DeviceItem;
+import fr.bmartel.android.tictactoe.datamodel.MessageObject;
 import fr.bmartel.android.tictactoe.request.ResponseParser;
 
 /**

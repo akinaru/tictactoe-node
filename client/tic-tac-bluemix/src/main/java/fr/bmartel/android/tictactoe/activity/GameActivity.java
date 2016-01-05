@@ -1,4 +1,4 @@
-package fr.bmartel.android.tictactoe;
+package fr.bmartel.android.tictactoe.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,7 +14,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import fr.bmartel.android.tictactoe.GameSingleton;
+import fr.bmartel.android.tictactoe.R;
 import fr.bmartel.android.tictactoe.constant.BroadcastFilters;
+import fr.bmartel.android.tictactoe.datamodel.MessageObject;
+import fr.bmartel.android.tictactoe.datamodel.PlayRequest;
 import fr.bmartel.android.tictactoe.request.ResponseParser;
 
 /**

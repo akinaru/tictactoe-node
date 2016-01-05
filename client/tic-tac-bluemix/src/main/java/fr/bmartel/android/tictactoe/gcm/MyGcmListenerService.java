@@ -35,9 +35,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Random;
 
-import fr.bmartel.android.tictactoe.ChallengeMessage;
-import fr.bmartel.android.tictactoe.DeviceListActivity;
-import fr.bmartel.android.tictactoe.GameMessageTopic;
+import fr.bmartel.android.tictactoe.datamodel.ChallengeMessage;
+import fr.bmartel.android.tictactoe.activity.DeviceListActivity;
+import fr.bmartel.android.tictactoe.datamodel.GameMessageTopic;
 import fr.bmartel.android.tictactoe.GameSingleton;
 import fr.bmartel.android.tictactoe.R;
 import fr.bmartel.android.tictactoe.constant.BroadcastFilters;

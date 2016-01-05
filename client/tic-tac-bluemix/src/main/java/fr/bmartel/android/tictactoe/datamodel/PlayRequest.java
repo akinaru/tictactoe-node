@@ -1,4 +1,7 @@
-package fr.bmartel.android.tictactoe;
+package fr.bmartel.android.tictactoe.datamodel;
+
+import fr.bmartel.android.tictactoe.datamodel.GameMessageTopic;
+import fr.bmartel.android.tictactoe.datamodel.MessageObject;
 
 /**
  * @author Bertrand Martel
