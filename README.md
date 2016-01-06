@@ -1,10 +1,13 @@
 # Tic-Tac-Toe remote game
 
+[![Build Status](https://travis-ci.org/akinaru/tictactoe-node.svg)](https://travis-ci.org/akinaru/tictactoe-node)
+[![License](http://img.shields.io/:license-mit-blue.svg)](LICENSE.md)
+
 Tic Tac Toe game between 2 remote players featuring :
 
 * Android client application
-* HTTP REST Apis for uplink connection
-* GCM push notifications for downling connection 
+* HTTP REST Apis for uplink communication
+* GCM push notifications for downlink communication 
 * CouchDB database with Stud TLS termination proxy
 
 ![screenshot](screenshot.png)
@@ -41,7 +44,7 @@ Paste the following content into `authentication.json` :
 | couchdb_password | couchdb user password |
 | gcm_api_key | gcm server api key (see GCM config) |
 
-* couchdb user creation is detailed in [Setup CouchDB section](##Setup CouchDB-+-Stud-backend)
+* couchdb user creation is detailed in `Setup CouchDB section`
 
 ### GCM server config
 
