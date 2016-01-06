@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/client.iml" filepath="$PROJECT_DIR$/client.iml" />
-      <module fileurl="file://$PROJECT_DIR$/tic-tac-bluemix/tic-tac-bluemix.iml" filepath="$PROJECT_DIR$/tic-tac-bluemix/tic-tac-bluemix.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tic-tac-toe/tic-tac-toe.iml" filepath="$PROJECT_DIR$/tic-tac-toe/tic-tac-toe.iml" />
     </modules>
   </component>
 </project>

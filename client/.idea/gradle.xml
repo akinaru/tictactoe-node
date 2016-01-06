@@ -9,7 +9,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/tic-tac-bluemix" />
+            <option value="$PROJECT_DIR$/tic-tac-toe" />
           </set>
         </option>
       </GradleProjectSettings>
