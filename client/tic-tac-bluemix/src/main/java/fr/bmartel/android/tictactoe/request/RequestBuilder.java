@@ -17,11 +17,12 @@ public class RequestBuilder {
      * @param deviceId
      * @return
      */
-    public static JSONObject buildConnectionRequest(String deviceId) {
+    public static JSONObject buildConnectionRequest(String deviceId,String username) {
 
         JSONObject req = new JSONObject();
         try {
             req.put(RequestConstants.DEVICE_ID, deviceId);
+            req.put(RequestConstants.DEVICE_NAME, username);
         } catch (JSONException e) {
             e.printStackTrace();
         }
