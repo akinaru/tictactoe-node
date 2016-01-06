@@ -12,7 +12,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,14 +25,17 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
-import fr.bmartel.android.tictactoe.adapter.DeviceAdapter;
 import fr.bmartel.android.tictactoe.GameSingleton;
 import fr.bmartel.android.tictactoe.R;
+import fr.bmartel.android.tictactoe.adapter.DeviceAdapter;
 import fr.bmartel.android.tictactoe.constant.BroadcastFilters;
+import fr.bmartel.android.tictactoe.constant.GameStates;
 import fr.bmartel.android.tictactoe.constant.RequestConstants;
 import fr.bmartel.android.tictactoe.datamodel.ChallengeMessage;
 import fr.bmartel.android.tictactoe.datamodel.ChallengeResponse;
+import fr.bmartel.android.tictactoe.datamodel.ClientConnectionEvent;
 import fr.bmartel.android.tictactoe.datamodel.DeviceItem;
 import fr.bmartel.android.tictactoe.datamodel.MessageObject;
 import fr.bmartel.android.tictactoe.request.ResponseParser;
@@ -51,6 +57,8 @@ public class DeviceListActivity extends Activity {
     private String deviceName = "";
 
     private Dialog challengeDialog = null;
+
+    private boolean init = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,15 +83,20 @@ public class DeviceListActivity extends Activity {
         usernameEditText = (EditText) findViewById(R.id.username_edittext);
         usernameEditText.setText(deviceName);
 
-        final Button change_username = (Button) findViewById(R.id.change_username);
+        usernameEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
-        //change username when button is clicked
-        change_username.setOnClickListener(new View.OnClickListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-            @Override
-            public void onClick(View v) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
 
-                GameSingleton.getInstance(DeviceListActivity.this).changeUserName(usernameEditText.getText().toString());
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(usernameEditText.getWindowToken(), 0);
+                    GameSingleton.getInstance(DeviceListActivity.this).changeUserName(usernameEditText.getText().toString());
+
+                    Toast.makeText(DeviceListActivity.this, "username changed", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                return false;
             }
         });
 
@@ -108,13 +121,44 @@ public class DeviceListActivity extends Activity {
 
         GameSingleton.getInstance(DeviceListActivity.this).requestDeviceList(deviceId);
 
-        Button refresh = (Button) findViewById(R.id.refresh);
-        refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GameSingleton.getInstance(DeviceListActivity.this).requestDeviceList(deviceId);
+        if (miamiCheck()) {
+
+            usernameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                                          @Override
+                                                          public void onFocusChange(View v, boolean hasFocus) {
+
+                                                              if (init) {
+                                                                  Log.i(TAG, "remove keyboard");
+                                                                  InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                                                  imm.hideSoftInputFromWindow(usernameEditText.getWindowToken(), 0);
+                                                                  init = false;
+                                                              }
+                                                          }
+                                                      }
+            );
+            usernameEditText.clearFocus();
+            usernameEditText.requestFocus();
+        }
+    }
+
+    /**
+     * Check if device is Miami box
+     *
+     * @return true if device is Miami box
+     */
+    public static boolean miamiCheck() {
+
+        Properties properties = System.getProperties();
+
+
+        if (properties.containsKey("http.agent")) {
+            if (properties.get("http.agent").toString().contains("BouygtelTV Build")) {
+                return true;
+            } else {
+                return false;
             }
-        });
+        }
+        return false;
     }
 
     @Override
@@ -229,6 +273,36 @@ public class DeviceListActivity extends Activity {
                                 });
                             }
                         }
+                    } else if (message instanceof ClientConnectionEvent) {
+
+                        final ClientConnectionEvent event = (ClientConnectionEvent) message;
+
+                        Log.i(TAG, "client has connected");
+
+                        runOnUiThread(new Runnable() {
+                            @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+                            @Override
+                            public void run() {
+
+                                if (deviceAdapter != null) {
+
+                                    boolean found = false;
+
+                                    for (int i = 0; i < deviceAdapter.getDeviceList().size(); i++) {
+                                        if (deviceAdapter.getDeviceList().get(i).getDeviceId().equals(event.getDeviceId())) {
+                                            deviceAdapter.getDeviceList().set(i, new DeviceItem(event.getDeviceId(), event.getDeviceName(), GameStates.NONE));
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!found) {
+                                        deviceAdapter.add(new DeviceItem(event.getDeviceId(), event.getDeviceName(), GameStates.NONE));
+                                    }
+                                    deviceAdapter.notifyDataSetChanged();
+                                }
+                            }
+                        });
                     }
                 }
             } else if (BroadcastFilters.EVENT_DEVICE_LIST.equals(action)) {

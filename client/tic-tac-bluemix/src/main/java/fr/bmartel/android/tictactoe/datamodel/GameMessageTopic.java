@@ -10,7 +10,8 @@ public enum GameMessageTopic {
     ACCEPTED(2),
     DECLINED(3),
     GAME_STOPPED(4),
-    PLAY(5);
+    PLAY(5),
+    CLIENT_CONNECTED(6);
 
     private final int value;
 
@@ -37,6 +38,8 @@ public enum GameMessageTopic {
                 return GAME_STOPPED;
             case 5:
                 return PLAY;
+            case 6:
+                return CLIENT_CONNECTED;
         }
         return NONE;
     }

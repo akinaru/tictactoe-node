@@ -9,14 +9,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.bmartel.android.tictactoe.constant.GameStates;
+import fr.bmartel.android.tictactoe.constant.RequestConstants;
 import fr.bmartel.android.tictactoe.datamodel.ChallengeMessage;
 import fr.bmartel.android.tictactoe.datamodel.ChallengeResponse;
+import fr.bmartel.android.tictactoe.datamodel.ClientConnectionEvent;
 import fr.bmartel.android.tictactoe.datamodel.DeviceItem;
 import fr.bmartel.android.tictactoe.datamodel.GameMessageTopic;
 import fr.bmartel.android.tictactoe.datamodel.MessageObject;
 import fr.bmartel.android.tictactoe.datamodel.PlayRequest;
-import fr.bmartel.android.tictactoe.constant.GameStates;
-import fr.bmartel.android.tictactoe.constant.RequestConstants;
 
 /**
  * @author Bertrand Martel
@@ -79,6 +80,13 @@ public class ResponseParser {
                         case PLAY: {
                             if (mainObject.has(RequestConstants.DEVICE_PLAY)) {
                                 return new PlayRequest(topic, mainObject.getInt(RequestConstants.DEVICE_PLAY));
+                            }
+                            return null;
+                        }
+                        case CLIENT_CONNECTED: {
+
+                            if (mainObject.has(RequestConstants.DEVICE_ID) && mainObject.has(RequestConstants.DEVICE_NAME)) {
+                                return new ClientConnectionEvent(topic, mainObject.getString(RequestConstants.DEVICE_ID), mainObject.getString(RequestConstants.DEVICE_NAME));
                             }
                             return null;
                         }
