@@ -26,8 +26,8 @@ var fs = require('fs');
 var https = require('https');
 var app = express();
 var options = {
-   key  : fs.readFileSync('/home/abathur/server.key'),
-   cert : fs.readFileSync('/home/abathur/server.crt')
+   key  : fs.readFileSync('server.key'),
+   cert : fs.readFileSync('server.crt')
 };
 
 var bodyParser = require('body-parser');
@@ -44,8 +44,8 @@ try {
 		console.log('[CONFIGURATION ERROR] in authentication.json file, you must have defined values for "couchdb_route" and "couchdb_username" and "couchdb_password"');
 		return;
 	}
-	if (!("gcm_token" in authent) || !("gcm_api_key" in authent)){
-		console.log('[CONFIGURATION ERROR] in authentication.json file, you must have defined values for "gcm_token" and "gcm_api_key"');
+	if (!("gcm_api_key" in authent)){
+		console.log('[CONFIGURATION ERROR] in authentication.json file, you must have defined values for "gcm_api_key"');
 		return;
 	}
 }
@@ -53,8 +53,6 @@ catch(e){
 	console.log("Error occured while reading file authentication.json");
 	return;
 }
-
-var regTokens = [ authent.gcm_token ];
 
 // Set up the sender with you API key
 var sender = new gcm.Sender( authent.gcm_api_key );
@@ -83,10 +81,6 @@ function authentication(){
 		if (headers && headers['set-cookie']) {
 			auth = headers['set-cookie'];
 		}
-
-		console.log(auth);
-
-		callback(null, "it worked");
 
 		deviceDB = require('nano')(
 			{ 
@@ -358,6 +352,6 @@ var server = https.createServer(options, app).listen(port, function () {
 	var host = server.address().address
 	var port = server.address().port
 
-	console.log("Example app listening at https://%s:%s", host, port)
+	console.log("Server listening at https://%s:%s", host, port)
 
 })
