@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.SSLCertificateSocketFactory;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -13,17 +14,25 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpStack;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import fr.bmartel.android.tictactoe.activity.GameActivity;
 import fr.bmartel.android.tictactoe.constant.BroadcastFilters;
@@ -69,7 +78,21 @@ public class GameSingleton {
         this.context = context.getApplicationContext();
         this.executor = Executors.newFixedThreadPool(1);
 
-        queue = Volley.newRequestQueue(context.getApplicationContext());
+        //queue = Volley.newRequestQueue(context.getApplicationContext());
+        HttpStack hurlStack = new HurlStack() {
+            @Override
+            protected HttpURLConnection createConnection(URL url) throws IOException {
+                HttpsURLConnection httpsURLConnection = (HttpsURLConnection) super.createConnection(url);
+                try {
+                    httpsURLConnection.setSSLSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
+                    httpsURLConnection.setHostnameVerifier(new AllowAllHostnameVerifier());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return httpsURLConnection;
+            }
+        };
+        queue = Volley.newRequestQueue(context, hurlStack);
 
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -86,7 +109,7 @@ public class GameSingleton {
         }
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (BuildConfig.APP_ROUTE + "/connect", RequestBuilder.buildConnectionRequest(DEVICE_ID), new Response.Listener<JSONObject>() {
+                (BuildConfig.APP_ROUTE + "/connect", RequestBuilder.buildConnectionRequest(DEVICE_ID, deviceName), new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
@@ -101,6 +124,7 @@ public class GameSingleton {
                     }
                 });
         jsObjRequest.setShouldCache(false);
+
         queue.add(jsObjRequest);
 
         Log.i(TAG, "device id " + DEVICE_ID + " initialized");
@@ -136,8 +160,6 @@ public class GameSingleton {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        Log.i(TAG, "length : " + req.toString().length());
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (BuildConfig.APP_ROUTE + "/username", req, new Response.Listener<JSONObject>() {
