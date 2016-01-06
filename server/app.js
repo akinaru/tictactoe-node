@@ -10,8 +10,8 @@ var gcm = require('node-gcm');
 var fs = require('fs');
 try {
 	var authent = JSON.parse(fs.readFileSync('authentication.json', 'utf8'));
-	if (!("cloudant_username" in authent) || !("cloudant_password" in authent)){
-		console.log('[CONFIGURATION ERROR] in authentication.json file, you must have defined values for "cloudant_username" and "cloudant_password"');
+	if ( !("couchdb_route" in authent) || !("couchdb_username" in authent) || !("couchdb_password" in authent)){
+		console.log('[CONFIGURATION ERROR] in authentication.json file, you must have defined values for "couchdb_route" and "couchdb_username" and "couchdb_password"');
 		return;
 	}
 	if (!("gcm_token" in authent) || !("gcm_api_key" in authent)){
@@ -29,7 +29,50 @@ var regTokens = [ authent.gcm_token ];
 // Set up the sender with you API key
 var sender = new gcm.Sender( authent.gcm_api_key );
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0" // Avoids DEPTH_ZERO_SELF_SIGNED_CERT error for self-signed certs
 
+var nano     = require('nano')({
+	'url': authent.couchdb_route
+})
+  , username = authent.couchdb_username
+  , userpass = authent.couchdb_password
+  , callback = console.log // this would normally be some callback
+  , cookies  = {} // store cookies, normally redis or something
+  ;
+
+nano.auth(username, userpass, function (err, body, headers) {
+
+	if (err) {
+		return callback(err);
+	}
+
+	if (headers && headers['set-cookie']) {
+		auth = headers['set-cookie'];
+	}
+
+	console.log(auth);
+
+	callback(null, "it worked");
+
+	deviceDB = require('nano')(
+		{ 
+			url : authent.couchdb_route + '/devices', 
+			cookie: auth
+    	}
+	);
+
+	// update an entry
+	deviceDB.update = function(obj, key, callback){
+		var db = this;
+		db.get(key, function (error, existing){ 
+			if(!error) obj._rev = existing._rev;
+			db.insert(obj, key, callback);
+		});
+	}
+
+});
+
+/*
 // Load the Cloudant library.
 var Cloudant = require('cloudant');
 
@@ -39,23 +82,7 @@ var password = authent.cloudant_password;
 // Initialize the library with my account.
 var cloudant = Cloudant({account:me, password:password});
 
-cloudant.db.list(function(err, allDbs) {
-	console.log('All my databases: %s', allDbs.join(', '))
-});
-
-//create database if not exist
-cloudant.db.create('devices');
-
-var deviceDB = cloudant.use('devices');
-
-deviceDB.insert(
-{ "views": 
-	{ "by_key": 
-		{ "map": function(doc) { emit([doc._id, null], doc._id); } } 
-	}
-}, '_design/devices', function (error, response) {
-	console.log("view created");
-});
+*/
 
 // update connection state for given deviceId 
 app.post('/connect', function (req, res) {
@@ -241,8 +268,12 @@ app.post('/play', function (req, res) {
 
 })
 
+/*
 var port = (process.env.VCAP_APP_PORT || 3000);
 var host = (process.env.VCAP_APP_HOST || 'localhost');
+*/
+var port = 4747;
+var host ='localhost';
 
 // launch listening loop
 var server = app.listen(port, function () {
@@ -253,12 +284,3 @@ var server = app.listen(port, function () {
 	console.log("Example app listening at http://%s:%s", host, port)
 
 })
-
-// update an entry
-deviceDB.update = function(obj, key, callback){
-	var db = this;
-	db.get(key, function (error, existing){ 
-		if(!error) obj._rev = existing._rev;
-		db.insert(obj, key, callback);
-	});
-}
