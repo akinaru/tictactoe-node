@@ -1,5 +1,35 @@
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015-2016 Bertrand Martel
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 var express = require('express');
+var fs = require('fs');
+var https = require('https');
 var app = express();
+var options = {
+   key  : fs.readFileSync('/home/abathur/server.key'),
+   cert : fs.readFileSync('/home/abathur/server.crt')
+};
+
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -40,37 +70,81 @@ var nano     = require('nano')({
   , cookies  = {} // store cookies, normally redis or something
   ;
 
-nano.auth(username, userpass, function (err, body, headers) {
+var deviceDB;
 
-	if (err) {
-		return callback(err);
-	}
+function authentication(){
 
-	if (headers && headers['set-cookie']) {
-		auth = headers['set-cookie'];
-	}
+	nano.auth(username, userpass, function (err, body, headers) {
 
-	console.log(auth);
+		if (err) {
+			return callback(err);
+		}
 
-	callback(null, "it worked");
+		if (headers && headers['set-cookie']) {
+			auth = headers['set-cookie'];
+		}
 
-	deviceDB = require('nano')(
-		{ 
-			url : authent.couchdb_route + '/devices', 
-			cookie: auth
-    	}
-	);
+		console.log(auth);
 
-	// update an entry
-	deviceDB.update = function(obj, key, callback){
-		var db = this;
-		db.get(key, function (error, existing){ 
-			if(!error) obj._rev = existing._rev;
-			db.insert(obj, key, callback);
-		});
-	}
+		callback(null, "it worked");
 
-});
+		deviceDB = require('nano')(
+			{ 
+				url : authent.couchdb_route + '/devices', 
+				cookie: auth
+			}
+		);
+
+		// update an entry
+		deviceDB.update = function(obj, key, callback){
+
+			var db = this;
+			db.get(key, function (error, existing){ 
+
+				if(!error) {
+					obj._rev = existing._rev;
+				}
+				else{
+					console.log(error);
+				}
+				db.insert(obj, key, callback);
+			});
+		}
+
+	});
+}
+
+authentication();
+//request authentication cookie each 9 minutes
+setInterval(authentication,540000);
+
+function notify_connection(deviceId,deviceName){
+
+	deviceDB.list({"include_docs": true},function(err, body) {
+
+		if (!err) {
+			body.rows.forEach(function(doc) {
+
+				if (("deviceName" in doc.doc) && (doc.id!=deviceId)){
+					
+
+					var message = new gcm.Message();
+					message.addData('message', { 'topic' : 6 ,'deviceId' : deviceId,'deviceName' : deviceName });
+
+					sender.send(message, { topic: '/topics/' + doc.id },5, function (err, response) {
+
+						if (err)
+							console.log(err);
+					});
+
+				}
+			});
+		}
+		else{
+			console.log(err);
+		}
+	});
+}
 
 /*
 // Load the Cloudant library.
@@ -87,13 +161,14 @@ var cloudant = Cloudant({account:me, password:password});
 // update connection state for given deviceId 
 app.post('/connect', function (req, res) {
 
-	if (("deviceId" in req.body)){
+	if (("deviceId" in req.body) && ("deviceName" in req.body)){
 
 		deviceDB.get(req.body.deviceId, {'include_docs': true },function(err, body) {
 
 			if (!err) {
 
 				body.state=1;
+				body.deviceName=req.body.deviceName;
 
 				deviceDB.update(body, req.body.deviceId, function(err, result){
 
@@ -118,6 +193,7 @@ app.post('/connect', function (req, res) {
 				res.status(200).send({"status":200});
 				});
 			}
+			notify_connection(req.body.deviceId, req.body.deviceName);
 		});
 	}
 	else {
@@ -139,6 +215,7 @@ app.post('/username', function (req, res) {
 				deviceDB.update(body, req.body.deviceId, function(err, result){
 
 					if(!err){
+						notify_connection(req.body.deviceId,req.body.deviceName);
 						res.status(200).send({"status":200,"message":"change devicename to " + body.deviceName});
 					}
 					else{
@@ -183,7 +260,7 @@ app.post('/challenge', function (req, res) {
 		var message = new gcm.Message();
 		message.addData('message', { 'topic' : 1 ,'challengerId' : req.body.challengerId,'challengerName' : req.body.challengerName });
 
-		sender.send(message, { topic: '/topics/' + req.body.targetId }, function (err, response) {
+		sender.send(message, { topic: '/topics/' + req.body.targetId }, 5,function (err, response) {
 
 			if(err) {
 				res.status(500).send({"status":500,"message":err.message});
@@ -206,7 +283,7 @@ app.post('/accept_challenge', function (req, res) {
 		var message = new gcm.Message();
 		message.addData('message', { 'topic' : 2 ,'challengerId' : req.body.challengerId,'challengerName' : req.body.challengerName });
 
-		sender.send(message, { topic: '/topics/' + req.body.targetId }, function (err, response) {
+		sender.send(message, { topic: '/topics/' + req.body.targetId }, 5,function (err, response) {
 
 			if(err) {
 				res.status(500).send({"status":500,"message":err.message});
@@ -229,7 +306,7 @@ app.post('/decline_challenge', function (req, res) {
 		var message = new gcm.Message();
 		message.addData('message', { 'topic' : 3 ,'challengerId' : req.body.challengerId,'challengerName' : req.body.challengerName });
 
-		sender.send(message, { topic: '/topics/' + req.body.targetId }, function (err, response) {
+		sender.send(message, { topic: '/topics/' + req.body.targetId },5, function (err, response) {
 
 			if(err) {
 				res.status(500).send({"status":500,"message":err.message});
@@ -252,7 +329,7 @@ app.post('/play', function (req, res) {
 		var message = new gcm.Message();
 		message.addData('message', { 'topic' : 5 ,'play' : req.body.play });
 
-		sender.send(message, { topic: '/topics/' + req.body.targetId }, function (err, response) {
+		sender.send(message, { topic: '/topics/' + req.body.targetId }, 5,function (err, response) {
 
 			if(err) {
 				res.status(500).send({"status":500,"message":err.message});
@@ -276,11 +353,11 @@ var port = 4747;
 var host ='localhost';
 
 // launch listening loop
-var server = app.listen(port, function () {
+var server = https.createServer(options, app).listen(port, function () {
 
 	var host = server.address().address
 	var port = server.address().port
 
-	console.log("Example app listening at http://%s:%s", host, port)
+	console.log("Example app listening at https://%s:%s", host, port)
 
 })
