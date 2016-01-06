@@ -2,12 +2,15 @@ package fr.bmartel.android.tictactoe.activity;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Dialog;
+import android.app.AlertDialog;
+import android.app.UiModeManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -17,7 +20,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,7 +27,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import fr.bmartel.android.tictactoe.GameSingleton;
 import fr.bmartel.android.tictactoe.R;
@@ -56,7 +57,7 @@ public class DeviceListActivity extends Activity {
     private String deviceId = "";
     private String deviceName = "";
 
-    private Dialog challengeDialog = null;
+    private AlertDialog challengeDialog = null;
 
     private boolean init = true;
 
@@ -120,47 +121,9 @@ public class DeviceListActivity extends Activity {
         });
 
         GameSingleton.getInstance(DeviceListActivity.this).requestDeviceList(deviceId);
-
-        if (miamiCheck()) {
-
-            usernameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                                                          @Override
-                                                          public void onFocusChange(View v, boolean hasFocus) {
-
-                                                              if (init) {
-                                                                  Log.i(TAG, "remove keyboard");
-                                                                  InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                                                                  imm.hideSoftInputFromWindow(usernameEditText.getWindowToken(), 0);
-                                                                  init = false;
-                                                              }
-                                                          }
-                                                      }
-            );
-            usernameEditText.clearFocus();
-            usernameEditText.requestFocus();
-        }
     }
 
-    /**
-     * Check if device is Miami box
-     *
-     * @return true if device is Miami box
-     */
-    public static boolean miamiCheck() {
-
-        Properties properties = System.getProperties();
-
-
-        if (properties.containsKey("http.agent")) {
-            if (properties.get("http.agent").toString().contains("BouygtelTV Build")) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
-
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onResume() {
         super.onResume();
@@ -173,7 +136,14 @@ public class DeviceListActivity extends Activity {
         if (GameSingleton.pendingChallenge && GameSingleton.pendingChallengeMessage != null) {
             showChallengeDialog(GameSingleton.pendingChallengeMessage.getChallengerName(), GameSingleton.pendingChallengeMessage.getChallengerId());
         }
+
+        UiModeManager uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
+        if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
+            EditText editTxt = (EditText) findViewById(R.id.username_edittext);
+            editTxt.requestFocus();
+        }
     }
+
 
     @Override
     protected void onPause() {
@@ -331,41 +301,30 @@ public class DeviceListActivity extends Activity {
 
     private void showChallengeDialog(final String challengerName, final String challengerId) {
 
-        challengeDialog = new Dialog(DeviceListActivity.this);
-
-        challengeDialog.setContentView(R.layout.challenge_dialog);
-
-        challengeDialog.setTitle("Challenged");
-
-        Button accept_btn = (Button) challengeDialog.findViewById(R.id.accept_btn);
-
-        Button decline_btn = (Button) challengeDialog.findViewById(R.id.decline_btn);
-
-        accept_btn.setOnClickListener(new View.OnClickListener() {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                //send accept, start game
-                GameSingleton.getInstance(DeviceListActivity.this).acceptChallenge(challengerId, challengerName);
-            }
-        });
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        GameSingleton.getInstance(DeviceListActivity.this).acceptChallenge(challengerId, challengerName);
+                        break;
 
-        decline_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //send decline, nothing to do more
-                GameSingleton.getInstance(DeviceListActivity.this).declineChallenge(challengerId, challengerName);
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        GameSingleton.getInstance(DeviceListActivity.this).declineChallenge(challengerId, challengerName);
 
-                if (challengeDialog != null) {
-                    challengeDialog.cancel();
-                    challengeDialog.dismiss();
+                        if (challengeDialog != null) {
+                            challengeDialog.cancel();
+                            challengeDialog.dismiss();
+                        }
+                        break;
                 }
             }
-        });
+        };
 
-        TextView challenge_message = (TextView) challengeDialog.findViewById(R.id.challenge_message);
+        AlertDialog.Builder builder = new AlertDialog.Builder(DeviceListActivity.this);
 
-        challenge_message.setText("You have been challenged by " + challengerName);
+        builder.setMessage("You have been challenged by " + challengerName + " ! ").setPositiveButton("accept", dialogClickListener)
+                .setNegativeButton("decline", dialogClickListener).show();
 
-        challengeDialog.show();
     }
 }
