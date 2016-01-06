@@ -7,9 +7,95 @@ Tic Tac Toe game between 2 remote players featuring :
 * GCM push notifications for downling connection 
 * CouchDB database with Stud TLS termination proxy
 
+![screenshot](screenshot.png)
+
 ## Architecture
 
-## Configuration
+![architecture](architecture.png)
+
+## Authentication config
+
+There are some prerequesite to match this architecture :
+
+In `server` directory, create a file named `authentication.json` :
+
+```
+cd server
+vi authentication.json
+```
+
+Paste the following content into `authentication.json` : 
+
+```
+{
+	"couchdb_route"    : "https://127.0.0.1:6984",
+	"couchdb_username" : "<username>",
+	"couchdb_password" : "<password>",
+	"gcm_api_key"      : "<api_key>"
+} 
+```
+| key value | description |
+|-----------|-------------|
+| couchdb_route | route for proxified couchdb service |
+| couchdb_username | couchdb user* |
+| couchdb_password | couchdb user password |
+| gcm_api_key | gcm server api key (see GCM config) |
+
+* couchdb user creation is detailed in [Setup CouchDB section](##Setup CouchDB-+-Stud-backend)
+
+### GCM server config
+
+Go to your google console https://console.developers.google.com :
+
+* create a project
+* click : "use Google API"
+* click : "Cloud Messaging for Android" and click "Activate"
+* go to "credentials" on the left tab 
+* create new credentials for "API key" and choose "Server Key"
+
+Replace `gcm_api_key` value in `authentication.json` with the api key value visible in google console :
+```
+"gcm_api_key"      : "<api_key>"
+```
+
+### GCM client config
+
+Follow google procedure to generate your API key on https://developers.google.com/cloud-messaging/android/client
+
+This process will give you a `google-services.json` file containing authentication parameters for your gcm client
+
+This file will be placed under `client/tic-tac-toe` directory
+
+### Server route
+
+Edit `buid.gradle` in application module and replace specified server route with yours: 
+
+```
+buildTypes {
+
+    debug {
+        buildConfigField "String", "APP_ROUTE", "\"https://XXX.XXX.XXX.XXX:4747\""
+    }
+    release {
+        buildConfigField "String", "APP_ROUTE", "\"https://XXX.XXX.XXX.XXX:4747\""
+        minifyEnabled false
+        proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+}
+```
+
+Then, you can build Android project using `gradlew` or with Android Studio
+
+### CouchDB config
+
+You have to process all steps in `CouchDB` section to fully setup CouchDB/Stud services.
+
+Choose a username/password that will refer to `couchdb_username` and `couchdb_password` in `authentication.json` :
+
+```
+"couchdb_username" : "<username>",
+"couchdb_password" : "<password>",
+```
 
 ## Setup CouchDB + Stud backend
 
@@ -149,6 +235,17 @@ curl http://localhost:5984
 curl -k https://localhost:6984
 ```
 
+## Launch server
+
+```
+cd server
+node app.js
+```
+
+Note that you may want to change `server/server.crt` and `server/server.key` with your own certificate pair.
+
+Add `process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"` if you use self-signed certificate
+
 ## CouchDB Troubleshoots
 
 In case of `{"error":"error","reason":"eacces"}` :
@@ -161,12 +258,12 @@ sudo chown -R couchdb /usr/local/var/log/couchdb
 
 ## Bluemix integration
 
-This project can also be integrated in Bluemix platform (substituing CouchDB/Stud with Cloudant webservice) through cloudfoundry CLI 
+This project can also be integrated in Bluemix platform (substituing CouchDB/Stud with Cloudant service) through cloudfoundry CLI 
 
 You can begin to create a mobile app that will provide you with :
 
 * SDK for NodeJS
-* Cloudant DB webservice
+* Cloudant DB service
 
 ### Cloudant credentials 
 
@@ -181,7 +278,6 @@ In `server/authentication.json` setup cloudant credetials :
 	"couchdb_route"    : "<bluemix_route>",
 	"couchdb_username" : "<cloudant_username>",
 	"couchdb_password" : "<cloudant_password>",
-	"gcm_token"        : "<project_number>",
 	"gcm_api_key"      : "<api_key>"
 } 
 ```
