@@ -9,3 +9,4 @@
 /server/node_modules
 /server/authentication.json
 /client/local.properties
+local.properties

@@ -1,13 +1,13 @@
 {
   "project_info": {
     "project_id": "tic-tac-toe-cccfd",
-    "project_number": "1054717196052",
+    "project_number": "11111111111111",
     "name": "Tic Tac Toe"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1054717196052:android:9ec432e08e83363a",
+        "mobilesdk_app_id": "1:1111111111111:android:1111111111111",
         "client_id": "android:fr.bmartel.android.tictactoe",
         "client_type": 1,
         "android_client_info": {
@@ -15,7 +15,7 @@
         }
       },
       "oauth_client": [],
-      "api_key": [],
+      "api_key": [{ "current_key": "" }],
       "services": {
         "analytics_service": {
           "status": 1
