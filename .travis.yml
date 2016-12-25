@@ -1,13 +1,14 @@
 language: android
 
 jdk:
-  - openjdk7
+  - openjdk8
 
 android:
   components:
-
+    - tools
     - android-25
     - build-tools-25.0.1
+    - extra-android-m2repository
 
 cache: false
 
@@ -20,4 +21,4 @@ install:
   - chmod +x ./client/gradlew; ls -l ./client/gradlew; ./client/gradlew wrapper -v
 
 script:
-  - cd ./client/; ./gradlew clean build connectedCheck
+  - cd ./client/; ./gradlew clean build
