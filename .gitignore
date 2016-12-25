@@ -8,3 +8,4 @@
 /server/manifest.yml
 /server/node_modules
 /server/authentication.json
+/client/local.properties
