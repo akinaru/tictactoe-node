@@ -20,5 +20,4 @@ install:
   - chmod +x ./gradlew; ls -l gradlew; ./gradlew wrapper -v
 
 script:
-  - cd ./client/
-  - ./gradlew clean build connectedCheck
+  - cd ./client/; ./gradlew clean build connectedCheck
