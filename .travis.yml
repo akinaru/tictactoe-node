@@ -17,7 +17,7 @@ before_install:
 
 install:
   # Ensure Gradle wrapper is executable, download wrapper and show version
-  - chmod +x ./gradlew; ls -l gradlew; ./gradlew wrapper -v
+  - chmod +x ./client/gradlew; ls -l ./client/gradlew; ./client/gradlew wrapper -v
 
 script:
   - cd ./client/; ./gradlew clean build connectedCheck
