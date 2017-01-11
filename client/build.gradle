@@ -16,12 +16,4 @@ allprojects {
     repositories {
         jcenter()
     }
-
-    afterEvaluate { project ->
-        FileCollection collection = files('file:/home/akinaru/test.json')
-        if (!collection.isEmpty()) {
-            File file = collection.getSingleFile();
-            println 'this is the file'+ file.text;
-        }
-    }
 }
