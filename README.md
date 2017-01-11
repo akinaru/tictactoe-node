@@ -1,6 +1,6 @@
 # Tic-Tac-Toe remote game
 
-[![Build Status](https://travis-ci.org/akinaru/tictactoe-node.svg)](https://travis-ci.org/akinaru/tictactoe-node)
+[![Build Status](https://travis-ci.org/bertrandmartel/tictactoe-node.svg)](https://travis-ci.org/bertrandmartel/tictactoe-node)
 [![License](http://img.shields.io/:license-mit-blue.svg)](LICENSE.md)
 
 Tic Tac Toe game between 2 remote players featuring :
@@ -206,7 +206,7 @@ mkdir /etc/default
 6) create init.d service :
 
 ```
-curl https://gist.githubusercontent.com/akinaru/0172b0d076f9a8f237bd/raw/f8fd8b03eae8a4251aee79abd6bd39d69bc24e15/stud > /etc/init.d/stud
+curl https://gist.githubusercontent.com/bertrandmartel/0172b0d076f9a8f237bd/raw/f8fd8b03eae8a4251aee79abd6bd39d69bc24e15/stud > /etc/init.d/stud
 chmod +x /etc/init.d/stud
 ```
 
